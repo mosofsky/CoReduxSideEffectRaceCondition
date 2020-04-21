@@ -8,6 +8,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
+import org.hamcrest.Matchers.not
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,20 +22,26 @@ class MainActivityTest {
     var mActivityTestRule = ActivityTestRule(MainActivity::class.java)
 
     @Test
-    fun shouldIncrementTwiceWithoutDelay() {
-        onView(withId(R.id.incrementByTwoButton)).perform(click())
+    fun shouldDoTwoAsyncTasksWithoutDelay() {
+        onView(withId(R.id.doAsyncTaskButton)).perform(click())
 
-        onView(withId(R.id.counterTextView))
-            .check(matches(withText("[init(0), by1(0), by2(2), by1(2), by2(4)]")))
+        validate()
     }
 
     @Test
-    fun shouldIncrementTwiceWithDelay() {
+    fun shouldDoTwoAsyncTasksWithDelay() {
         onView(withId(R.id.addDelay)).perform(click())
 
-        onView(withId(R.id.incrementByTwoButton)).perform(click())
+        onView(withId(R.id.doAsyncTaskButton)).perform(click())
 
-        onView(withId(R.id.counterTextView))
-            .check(matches(withText("[init(0), by1(0), by2(2), by1(2), by2(4)]")))
+        validate()
+    }
+
+    private fun validate() {
+        onView(withId(R.id.historyTextView))
+            .check(matches(not(withText("[init, go, go, done]"))))
+
+        onView(withId(R.id.historyTextView))
+            .check(matches(withText("[init, go, done, go, done]")))
     }
 }

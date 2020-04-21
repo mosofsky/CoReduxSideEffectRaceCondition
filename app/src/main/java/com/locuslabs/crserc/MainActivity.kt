@@ -18,12 +18,12 @@ class MainActivity : AppCompatActivity() {
         myViewModel.state.observe(this, Observer { render() })
 
         val actions = listOf(
-                MyReduxAction.InitCounterAction,
-                MyReduxAction.IncrementCounterBy1Action,
-                MyReduxAction.IncrementCounterBy1Action
+                MyReduxAction.InitAction,
+                MyReduxAction.TriggerAsyncAction,
+                MyReduxAction.TriggerAsyncAction
         )
 
-        findViewById<Button>(R.id.incrementByTwoButton).setOnClickListener {
+        findViewById<Button>(R.id.doAsyncTaskButton).setOnClickListener {
             if (findViewById<Switch>(R.id.addDelay).isChecked) {
                 myViewModel.dispatchMultipleActions(actions)
             } else {
@@ -37,6 +37,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun render() {
-        findViewById<TextView>(R.id.counterTextView).text = state().history.toString()
+        findViewById<TextView>(R.id.historyTextView).text = state().history.toString()
     }
 }

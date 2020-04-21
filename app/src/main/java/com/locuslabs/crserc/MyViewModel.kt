@@ -20,20 +20,20 @@ class MyViewModel(application: Application) : AndroidViewModel(application), Cor
 
     private val mutableState = MutableLiveData<MyReduxState>()
 
-    private val performIncrementCounterSideEffect = SimpleSideEffect<MyReduxState, MyReduxAction>("A SimpleSideEffect") {_, action, _, handler ->
+    private val performAsyncSideEffect = SimpleSideEffect<MyReduxState, MyReduxAction>("A SimpleSideEffect") { _, action, _, handler ->
         when (action) {
-            MyReduxAction.IncrementCounterBy1Action -> handler {
-                MyReduxAction.IncrementCounterBy2Action
+            MyReduxAction.TriggerAsyncAction -> handler {
+                MyReduxAction.AsyncFinishedAction
             }
             else -> null
         }
     }
 
     private val reduxStore = this.createStore(
-        name = "LocusLabs Redux Store",
+        name = "MyRedux Store",
         initialState = MyReduxState(),
         sideEffects = listOf(
-            performIncrementCounterSideEffect
+            performAsyncSideEffect
         ),
         reducer = ::reducer
     ).also {
@@ -57,27 +57,21 @@ class MyViewModel(application: Application) : AndroidViewModel(application), Cor
         Log.d(t, "reduce $action")
 
         return when (action) {
-            MyReduxAction.InitCounterAction -> {
-                val newCounter = 0
+            MyReduxAction.InitAction -> {
                 state.copy(
-                    counter = newCounter,
-                    history = listOf("init($newCounter)")
+                    history = listOf("init")
                 )
             }
 
-            is MyReduxAction.IncrementCounterBy1Action -> {
-                val newCounter = state.counter
+            is MyReduxAction.TriggerAsyncAction -> {
                 state.copy(
-                    counter = newCounter,
-                    history = state.history + listOf("by1($newCounter)")
+                    history = state.history + listOf("go")
                 )
             }
 
-            is MyReduxAction.IncrementCounterBy2Action -> {
-                val newCounter = state.counter + 2
+            is MyReduxAction.AsyncFinishedAction -> {
                 state.copy(
-                    counter = newCounter,
-                    history = state.history + listOf("by2($newCounter)")
+                    history = state.history + listOf("done")
                 )
             }
         }

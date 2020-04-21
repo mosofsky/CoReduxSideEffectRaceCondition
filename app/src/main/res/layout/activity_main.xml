@@ -11,12 +11,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/add_delay"
-        app:layout_constraintBottom_toTopOf="@+id/incrementByTwoButton"
-        app:layout_constraintEnd_toEndOf="@+id/incrementByTwoButton"
-        app:layout_constraintStart_toStartOf="@+id/incrementByTwoButton" />
+        app:layout_constraintBottom_toTopOf="@+id/doAsyncTaskButton"
+        app:layout_constraintEnd_toEndOf="@+id/doAsyncTaskButton"
+        app:layout_constraintStart_toStartOf="@+id/doAsyncTaskButton" />
 
     <Button
-        android:id="@+id/incrementByTwoButton"
+        android:id="@+id/doAsyncTaskButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/increment_by_two"
@@ -27,12 +27,12 @@
         app:layout_constraintVertical_bias="0.33" />
 
     <TextView
-        android:id="@+id/counterTextView"
+        android:id="@+id/historyTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="@+id/incrementByTwoButton"
-        app:layout_constraintStart_toStartOf="@+id/incrementByTwoButton"
-        app:layout_constraintTop_toBottomOf="@+id/incrementByTwoButton"
+        app:layout_constraintEnd_toEndOf="@+id/doAsyncTaskButton"
+        app:layout_constraintStart_toStartOf="@+id/doAsyncTaskButton"
+        app:layout_constraintTop_toBottomOf="@+id/doAsyncTaskButton"
         tools:text="0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
