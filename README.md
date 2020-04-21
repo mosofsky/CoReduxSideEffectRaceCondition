@@ -10,7 +10,7 @@ You can reproduce the problem manually or automatically using the automated test
 1. Launch app in emulator
 1. Leave "Add Delay" unchecked
 1. Click "Do Async Task"
-1. The output should read "[init, go, done, go, done]" but instead it reads ""[init, go, go, done]"
+1. The output should read "[init, go, done, go, done]" but instead it reads "[init, go, go, done]"
 
 The desired behavior is possible if you add the delay, as follows:
 
