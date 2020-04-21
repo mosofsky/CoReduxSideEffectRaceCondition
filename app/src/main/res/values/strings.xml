@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CoReduxSideEffectRaceCondition</string>
+    <string name="increment_by_two" translatable="false">Increment by Two</string>
+    <string name="add_delay" translatable="false">Add Delay</string>
+</resources>
