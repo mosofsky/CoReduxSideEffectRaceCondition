@@ -63,13 +63,13 @@ class MyViewModel(application: Application) : AndroidViewModel(application), Cor
                 )
             }
 
-            is MyReduxAction.TriggerAsyncAction -> {
+            MyReduxAction.TriggerAsyncAction -> {
                 state.copy(
                     history = state.history + listOf("go")
                 )
             }
 
-            is MyReduxAction.AsyncFinishedAction -> {
+            MyReduxAction.AsyncFinishedAction -> {
                 state.copy(
                     history = state.history + listOf("done")
                 )
