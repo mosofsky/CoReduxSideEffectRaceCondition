@@ -6,12 +6,11 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.freeletics.coredux.SimpleSideEffect
-import com.freeletics.coredux.createStore
-import com.freeletics.coredux.subscribeToChangedStateUpdates
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import androidx.lifecycle.viewModelScope
+import com.freeletics.coredux.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.SendChannel
 import kotlin.coroutines.CoroutineContext
 
 class MyViewModel(application: Application) : AndroidViewModel(application), CoroutineScope {
@@ -20,12 +19,22 @@ class MyViewModel(application: Application) : AndroidViewModel(application), Cor
 
     private val mutableState = MutableLiveData<MyReduxState>()
 
-    private val performAsyncSideEffect = SimpleSideEffect<MyReduxState, MyReduxAction>("A SimpleSideEffect") { _, action, _, handler ->
-        when (action) {
-            MyReduxAction.TriggerAsyncAction -> handler {
-                MyReduxAction.AsyncFinishedAction
+    private val performAsyncSideEffect = object : SideEffect<MyReduxState, MyReduxAction> {
+        override val name: String = "my performAsyncSideEffect"
+
+        override fun CoroutineScope.start(
+            input: ReceiveChannel<MyReduxAction>,
+            stateAccessor: StateAccessor<MyReduxState>,
+            output: SendChannel<MyReduxAction>,
+            logger: SideEffectLogger
+        ): Job = viewModelScope.launch(context = CoroutineName(name)) {
+            for (action in input) {
+                when (action) {
+                    MyReduxAction.TriggerAsyncAction -> {
+                        output.send(MyReduxAction.AsyncFinishedAction)
+                    }
+                }
             }
-            else -> null
         }
     }
 
