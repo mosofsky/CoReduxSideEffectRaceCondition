@@ -20,9 +20,18 @@ class MyViewModel(application: Application) : AndroidViewModel(application), Cor
 
     private val mutableState = MutableLiveData<MyReduxState>()
 
-    private val performAsyncSideEffect = SimpleSideEffect<MyReduxState, MyReduxAction>("A SimpleSideEffect") { _, action, _, handler ->
+    private val performAsyncSideEffect1 = SimpleSideEffect<MyReduxState, MyReduxAction>("A SimpleSideEffect") { _, action, _, handler ->
         when (action) {
-            MyReduxAction.TriggerAsyncAction -> handler {
+            MyReduxAction.TriggerAsyncAction1 -> handler {
+                MyReduxAction.AsyncFinishedAction
+            }
+            else -> null
+        }
+    }
+
+    private val performAsyncSideEffect2 = SimpleSideEffect<MyReduxState, MyReduxAction>("A SimpleSideEffect") { _, action, _, handler ->
+        when (action) {
+            MyReduxAction.TriggerAsyncAction2 -> handler {
                 MyReduxAction.AsyncFinishedAction
             }
             else -> null
@@ -33,7 +42,8 @@ class MyViewModel(application: Application) : AndroidViewModel(application), Cor
         name = "MyRedux Store",
         initialState = MyReduxState(),
         sideEffects = listOf(
-            performAsyncSideEffect
+            performAsyncSideEffect1,
+            performAsyncSideEffect2
         ),
         reducer = ::reducer
     ).also {
@@ -63,7 +73,7 @@ class MyViewModel(application: Application) : AndroidViewModel(application), Cor
                 )
             }
 
-            MyReduxAction.TriggerAsyncAction -> {
+            MyReduxAction.TriggerAsyncAction1, MyReduxAction.TriggerAsyncAction2 -> {
                 state.copy(
                     history = state.history + listOf("go")
                 )

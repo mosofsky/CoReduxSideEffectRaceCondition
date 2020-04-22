@@ -25,7 +25,8 @@ class MainActivityTest {
     fun shouldDoTwoAsyncTasksWithoutDelay() {
         onView(withId(R.id.doAsyncTaskButton)).perform(click())
 
-        validate()
+        onView(withId(R.id.historyTextView))
+            .check(matches(withText("[init, go, go, done, done]")))
     }
 
     @Test
@@ -33,13 +34,6 @@ class MainActivityTest {
         onView(withId(R.id.addDelay)).perform(click())
 
         onView(withId(R.id.doAsyncTaskButton)).perform(click())
-
-        validate()
-    }
-
-    private fun validate() {
-        onView(withId(R.id.historyTextView))
-            .check(matches(not(withText("[init, go, go, done]"))))
 
         onView(withId(R.id.historyTextView))
             .check(matches(withText("[init, go, done, go, done]")))

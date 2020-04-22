@@ -19,8 +19,8 @@ class MainActivity : AppCompatActivity() {
 
         val actions = listOf(
                 MyReduxAction.InitAction,
-                MyReduxAction.TriggerAsyncAction,
-                MyReduxAction.TriggerAsyncAction
+                MyReduxAction.TriggerAsyncAction1,
+                MyReduxAction.TriggerAsyncAction2
         )
 
         findViewById<Button>(R.id.doAsyncTaskButton).setOnClickListener {
