@@ -1,5 +1,6 @@
 package com.locuslabs.crserc
 
 data class MyReduxState(
-    val history: List<String> = listOf()
+    val result1: List<String> = listOf(),
+    val result2: List<String> = listOf()
 )

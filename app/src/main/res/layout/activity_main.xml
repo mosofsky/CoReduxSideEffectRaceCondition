@@ -6,33 +6,39 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Switch
-        android:id="@+id/addDelay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/add_delay"
-        app:layout_constraintBottom_toTopOf="@+id/doAsyncTaskButton"
-        app:layout_constraintEnd_toEndOf="@+id/doAsyncTaskButton"
-        app:layout_constraintStart_toStartOf="@+id/doAsyncTaskButton" />
-
     <Button
-        android:id="@+id/doAsyncTaskButton"
+        android:id="@+id/doAsyncTasksButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/increment_by_two"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/do_async_tasks"
+        app:layout_constraintBottom_toTopOf="@+id/result1TextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.33" />
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/historyTextView"
+        android:id="@+id/result1TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="@+id/doAsyncTaskButton"
-        app:layout_constraintStart_toStartOf="@+id/doAsyncTaskButton"
-        app:layout_constraintTop_toBottomOf="@+id/doAsyncTaskButton"
-        tools:text="0" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/result2TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/doAsyncTasksButton"
+        tools:text="1"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/result2TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/result1TextView"
+        tools:text="2"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

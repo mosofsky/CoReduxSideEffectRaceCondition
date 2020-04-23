@@ -8,6 +8,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.freeletics.coredux.*
+import com.freeletics.coredux.log.android.AndroidLogSink
+import com.freeletics.coredux.log.common.LoggerLogSink
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
@@ -17,10 +19,10 @@ class MyViewModel(application: Application) : AndroidViewModel(application), Cor
     private val job = Job()
     override val coroutineContext: CoroutineContext get() = Dispatchers.Main + job
 
-    private val mutableState = MutableLiveData<MyReduxState>()
+    private val mutableState = MutableLiveData(MyReduxState())
 
-    private val performAsyncSideEffect = object : SideEffect<MyReduxState, MyReduxAction> {
-        override val name: String = "my performAsyncSideEffect"
+    private val updateUISideEffect = object : SideEffect<MyReduxState, MyReduxAction> {
+        override val name: String = "my updateUISideEffect"
 
         override fun CoroutineScope.start(
             input: ReceiveChannel<MyReduxAction>,
@@ -30,19 +32,54 @@ class MyViewModel(application: Application) : AndroidViewModel(application), Cor
         ): Job = viewModelScope.launch(context = CoroutineName(name)) {
             for (action in input) {
                 when (action) {
-                    MyReduxAction.TriggerAsyncAction -> {
-                        output.send(MyReduxAction.AsyncFinishedAction)
+                    MyReduxAction.Async1StartAction, MyReduxAction.Async1FinishedAction -> {
+                        isShowingResult1.value = isShowingResult1.value?.let { !it } ?: true
+                    }
+                    MyReduxAction.Async2FinishedAction -> {
+                        isShowingResult2.value = isShowingResult2.value?.let { !it } ?: true
                     }
                 }
             }
         }
     }
 
+    private val performAsyncTaskSideEffect =
+        CancellableSideEffect<MyReduxState, MyReduxAction>("my performAsyncTaskSideEffect") { _, action, _, handler ->
+            when (action) {
+                MyReduxAction.Async2StartAction -> handler { _, output ->
+                    launch {
+                        delay(DELAY_MILLISECONDS * 2)
+                        output.send(MyReduxAction.Async2FinishedAction)
+                    }
+                }
+                else -> null
+            }
+        }
+
+    // Alternative implementation of performAsyncTaskSideEffect as a SimpleSideEffect
+//    private val performAsyncTaskSideEffect =
+//        SimpleSideEffect<MyReduxState, MyReduxAction>("my performAsyncTaskSideEffect") { _, action, _, handler ->
+//            when (action) {
+//                MyReduxAction.Async2StartAction -> handler {
+//                    delay(DELAY_MILLISECONDS * 2)
+//                    MyReduxAction.Async2FinishedAction
+//                }
+//                else -> null
+//            }
+//        }
+
+    val isShowingResult1 = MutableLiveData<Boolean>()
+    val isShowingResult2 = MutableLiveData<Boolean>()
+
+    private val loggers = setOf(AndroidLogSink())
+
     private val reduxStore = this.createStore(
         name = "MyRedux Store",
         initialState = MyReduxState(),
+        logSinks = loggers.toList(),
         sideEffects = listOf(
-            performAsyncSideEffect
+            updateUISideEffect,
+            performAsyncTaskSideEffect
         ),
         reducer = ::reducer
     ).also {
@@ -52,13 +89,6 @@ class MyViewModel(application: Application) : AndroidViewModel(application), Cor
     }
 
     val dispatchAction: (MyReduxAction) -> Unit = reduxStore::dispatch
-    val dispatchMultipleActions: (List<MyReduxAction>) -> Unit = { actions ->
-        actions.forEachIndexed { index, action ->
-            Handler().postDelayed({
-                dispatchAction(action)
-            }, index * DISPATCH_ACTION_DELAY_MILLISECONDS)
-        }
-    }
 
     val state: LiveData<MyReduxState> = mutableState
 
@@ -66,21 +96,25 @@ class MyViewModel(application: Application) : AndroidViewModel(application), Cor
         Log.d(t, "reduce $action")
 
         return when (action) {
-            MyReduxAction.InitAction -> {
+            MyReduxAction.Async1StartAction -> {
                 state.copy(
-                    history = listOf("init")
+                    result1 = listOf("showUIAsync")
                 )
             }
 
-            MyReduxAction.TriggerAsyncAction -> {
+            MyReduxAction.Async1FinishedAction -> {
+                state
+            }
+
+            MyReduxAction.Async2StartAction -> {
                 state.copy(
-                    history = state.history + listOf("go")
+                    result2 = listOf("startBackendAsync")
                 )
             }
 
-            MyReduxAction.AsyncFinishedAction -> {
+            MyReduxAction.Async2FinishedAction -> {
                 state.copy(
-                    history = state.history + listOf("done")
+                    result2 = state.result2 + listOf("endBackendAsync")
                 )
             }
         }
